@@ -1,6 +1,6 @@
 import axiosInstance from "../src/Api";
 
-const baseURL = "http://54.84.3.190:8080";
+const baseURL = "http://54.84.3.190:8081";
 
 let APIService = {
   getApiData: async endpoint => {
