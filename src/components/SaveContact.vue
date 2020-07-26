@@ -53,7 +53,7 @@
 import { Modal, Button, Input, FormItem, Form, locale } from "view-design";
 import { mapState, mapMutations } from "vuex";
 import { APIService } from "../ApiService";
-import lang from "iview/dist/locale/en-US";
+import lang from "view-design/dist/locale/en-US";
 
 locale(lang);
 export default {
