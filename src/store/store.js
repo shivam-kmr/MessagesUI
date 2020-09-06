@@ -7,7 +7,9 @@ export default new Vuex.Store({
   state: {
     contacts: {},
     conversations: {},
-    selectedUser: {}
+    selectedUser: {},
+    messages: [],
+    message: {}
   },
   mutations: {
     set_contacts(state, contacts) {
@@ -21,6 +23,12 @@ export default new Vuex.Store({
     },
     set_selectedUser(state, selectedUser) {
       state.selectedUser = selectedUser;
+    },
+    set_messeges(state, messages) {
+      state.messages = messages;
+    },
+    set_newmesseges(state, message) {
+      state.messages.push(message);
     }
   }
 });

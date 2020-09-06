@@ -1,6 +1,7 @@
 import axiosInstance from "../src/Api";
+import qs from "qs";
 
-const baseURL = "http://54.84.3.190:8081";
+const baseURL = "http://messageapi.shivamkmr.me";
 
 let APIService = {
   getApiData: async endpoint => {
@@ -8,8 +9,15 @@ let APIService = {
     return axiosInstance.get(url);
   },
   post: async (endpoint, postData) => {
+    var data = qs.stringify(postData);
     var url = baseURL + endpoint;
-    return axiosInstance.post(url, postData);
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+    };
+    return axiosInstance.post(url, data, headers);
+  },
+  sendOTP: async url => {
+    return axiosInstance.get(url);
   }
 };
 

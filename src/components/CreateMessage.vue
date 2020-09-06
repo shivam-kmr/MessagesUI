@@ -14,9 +14,9 @@
           class="btn btn-primary"
           type="submit"
           name="action"
-          style="margin-left: 10px;"
+          style="margin-left: 20px;"
         >
-          Submit
+          Send
         </button>
         <p class="text-danger" v-if="errorText">{{ errorText }}</p>
       </div>
@@ -43,23 +43,45 @@ export default {
     };
   },
   computed: {
-    ...mapState(["contacts", "conversations", "selectedUser"])
+    ...mapState(["contacts", "conversations", "selectedUser", "messages"])
   },
   methods: {
-    ...mapMutations(["set_contacts", "set_conversations", "set_selectedUser"]),
+    ...mapMutations([
+      "set_contacts",
+      "set_conversations",
+      "set_selectedUser",
+      "set_newmesseges"
+    ]),
+    success(response) {
+      this.$Notice.success({
+        title: "Message Sent Successfully",
+        desc: response
+      });
+    },
     createMessage() {
       if (this.newMessage) {
         this.errorText = "";
         var otp = this.getRandomGeneratedOTP();
-        var text = "OTP: " + otp + ". Your Custom Message" + this.newMessage;
+        var text = "OTP: " + otp + " " + this.newMessage;
         this.messegeObject.message = text;
         this.messegeObject.userId = this.selectedUser._id;
         this.messegeObject.countryCode = this.selectedUser.countryCode;
-        this.messegeObject.to = this.selectedUser.phone;
-
+        this.messegeObject.to = this.selectedUser.mobile;
+        this.newMessage = "";
         APIService.post("/messages", this.messegeObject).then(response => {
           let message = response.data;
-          this.add_message(message);
+          this.set_newmesseges(message);
+        });
+        var apiString =
+          "https://api.msg91.com/api/sendhttp.php?authkey=340906AbZQnGtp5f552520P1&mobiles=" +
+          this.selectedUser.mobile +
+          "&unicode=&country=" +
+          this.selectedUser.countryCode +
+          "&message=" +
+          text +
+          "&sender=SHIVAMK&route=4";
+        APIService.sendOTP(apiString).then(response => {
+          this.success(response);
         });
       } else {
         this.errorText = "A message must be entered first!";

@@ -45,17 +45,21 @@
             [No messages yet!]
           </p>
           <div class="messages">
+            <List border size="large">
+              <ListItem v-for="message in messages" :key="message.id"
+                >{{ message.message }}
+                <template slot="action">
+                  <li>
+                    <Icon type="md-time" /> {{ getReadableTime(message.time) }}
+                  </li>
+                </template>
+              </ListItem>
+            </List>
             <div
               v-for="message in userConversations.conversation"
               :key="message.id"
             >
-              <span class="text-info"
-                >[{{
-                  userConversations.userInfo.firstName +
-                    " " +
-                    userConversations.userInfo.lastName
-                }}]:
-              </span>
+              <span class="text-info">[{{ " SK" }}]: </span>
               <span>{{ message.message }}</span>
               <span class="text-secondary time">{{
                 getReadableTime(message.time)
@@ -71,7 +75,7 @@
   </div>
 </template>
 <script>
-import { Sider, Divider } from "view-design";
+import { Sider, Divider, List } from "view-design";
 import { mapState, mapMutations } from "vuex";
 import VuePerfectScrollbar from "vue-perfect-scrollbar";
 import CreateMessage from "@/components/CreateMessage";
@@ -81,17 +85,17 @@ export default {
     Sider,
     Divider,
     VuePerfectScrollbar,
-    CreateMessage
+    CreateMessage,
+    List
   },
   computed: {
-    ...mapState(["contacts", "conversations"])
+    ...mapState(["contacts", "conversations", "messages"])
   },
   data() {
     return {
       settings: {
         maxScrollbarLength: 600
       },
-      messages: [],
       name: "Shivam",
       userConversations: [],
       userInfo: {},
@@ -110,7 +114,12 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(["set_contacts", "set_conversations", "set_selectedUser"]),
+    ...mapMutations([
+      "set_contacts",
+      "set_conversations",
+      "set_selectedUser",
+      "set_messeges"
+    ]),
     getReadableTime(milliseconds) {
       const dateObject = new Date(milliseconds);
       const humanDateFormat = dateObject.toLocaleString();
@@ -131,10 +140,11 @@ export default {
       });
     },
     getContactDetails(id) {
-      var endpoint = "/conversations/" + id;
+      var endpoint = "/conversations?id=" + id;
       APIService.getApiData(endpoint).then(response => {
-        this.userConversations = response.data.conversation;
-        this.userInfo = response.data.userInfo;
+        this.userConversations = response.data;
+        this.userInfo = response.data[0].userDetails[0];
+        this.set_messeges(this.userConversations);
         this.set_selectedUser(this.userInfo);
       });
       this.getDataFromApiCalls();
@@ -147,6 +157,12 @@ export default {
   }
 };
 </script>
+<style>
+.ivu-list-item-action > li:first-child {
+  position: absolute;
+  right: 10px;
+}
+</style>
 <style scoped>
 /* The sidebar menu */
 .sidenav {
@@ -209,7 +225,7 @@ export default {
   font-size: 0.7em;
 }
 .messages {
-  max-height: 300px;
+  max-height: 400px;
   overflow: auto;
 }
 .container {
